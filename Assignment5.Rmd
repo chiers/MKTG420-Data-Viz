@@ -1,0 +1,83 @@
+---
+title: "Assignment Tall Buildings"
+author: "Cooper Hiers"
+date: "October 5, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+# 
+# ?count
+# ?as.numeric
+# ?as.character
+# ?summarise
+
+tallestbuildings=read.csv("tallestbuildings.csv")
+str(tallestbuildings)
+
+```
+
+```{r}
+## Problem 1
+
+tallestbuildings$City=as.character(tallestbuildings$City)
+tallestbuildings$City=gsub("\xff","",tallestbuildings$City)
+tallestbuildings %>% group_by(City)%>%tally()%>%ggplot(.,aes(reorder(City,n),n))+geom_bar(stat="identity")+coord_flip()
+
+
+```
+
+```{r}
+## Problem 2
+
+tallestbuildings$Height..ft.=as.character(tallestbuildings$Height..ft.)
+tallestbuildings$Height..ft.=gsub(",","",tallestbuildings$Height..ft.)
+tallestbuildings$Height..ft.=as.numeric(tallestbuildings$Height..ft.)
+
+tallestbuildings %>% group_by(City) %>%  summarise(Mean.Height=round(mean(Height..ft.,na.rm=TRUE),2))%>%
+    ggplot(aes(x=reorder(City,Mean.Height), y=Mean.Height)) +
+    geom_bar(stat="identity")+xlab("")+coord_flip()
+```
+
+
+```{r}
+## Question 3
+
+library(countrycode)
+tallestcountries=tallestbuildings %>% separate(City,c("City","Country"), sep="[:punct:]")
+
+tallestcountries %>% group_by(Country)%>%tally()%>%ggplot(.,aes(reorder(Country,n),n))+geom_bar(stat="identity")+coord_flip()
+
+```
+
+```{r}
+## Question 4
+
+tallestcountries %>% group_by(Country) %>%  summarise(Mean.Height=round(mean(Height..ft.,na.rm=TRUE),2))%>%
+    ggplot(aes(x=reorder(Country,Mean.Height), y=Mean.Height)) +
+    geom_bar(stat="identity")+xlab("")+coord_flip()
+```
+
+```{r}
+## Question 5
+
+tallestcountries %>% group_by(Country) %>%  summarise(Mean.Height=round(mean(Height..ft.,na.rm=TRUE),2))%>%
+ggplot(aes(color= Country, fill = Country, x=reorder(Country,Mean.Height), y=Mean.Height)) +
+    geom_bar(stat="identity")+xlab("")+coord_flip()
+
+```
+
+```{r}
+## Question 6
+
+tallestbuildings %>% group_by(Use) %>%  summarise(Mean.Height=round(mean(Height..ft.,na.rm=TRUE),2))%>%
+    ggplot(aes(x=reorder(Use,Mean.Height), y=Mean.Height)) +
+    geom_bar(stat="identity")+xlab("")+coord_flip()
+```
